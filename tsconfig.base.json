@@ -4,17 +4,29 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "strictPropertyInitialization": false,
     "target": "es2015",
     "module": "esnext",
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@dual-dictionary/common": ["core/common/src/index.ts"],
+      "@dual-dictionary/config": ["core/config/src/index.ts"],
+      "@dual-dictionary/logger": ["core/logger/src/index.ts"],
+      "@dual-dictionary/database": ["core/database/src/index.ts"],
+      "@dual-dictionary/swagger": ["core/swagger/src/index.ts"],
+      "@dual-dictionary/auth": ["modules/auth/src/index.ts"],
+      "@dual-dictionary/health": ["core/health/src/index.ts"],
+      "@dual-dictionary/users": ["modules/users/src/index.ts"],
+      "@dual-dictionary/i18n": ["core/i18n/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

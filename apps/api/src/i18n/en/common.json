@@ -1,0 +1,8 @@
+{
+  "not_found": "Resource not found",
+  "forbidden": "Access denied",
+  "unauthorized": "Unauthorized",
+  "bad_request": "Bad request",
+  "internal_error": "Internal server error",
+  "conflict": "Resource already exists"
+}

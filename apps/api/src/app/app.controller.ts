@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { ApiTags } from '@nestjs/swagger';
+import { Public } from '@dual-dictionary/common';
 
+@ApiTags('app')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getData() {
-    return this.appService.getData();
+  @Public()
+  ping(): { status: string; app: string } {
+    return { status: 'ok', app: 'dual-dictionary-api' };
   }
 }

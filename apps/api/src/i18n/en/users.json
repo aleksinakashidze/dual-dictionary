@@ -1,0 +1,8 @@
+{
+  "not_found": "User not found",
+  "created": "User created successfully",
+  "updated": "User updated successfully",
+  "deleted": "User deleted successfully",
+  "email_taken": "Email already in use",
+  "username_taken": "Username already taken"
+}
