@@ -15,7 +15,6 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import {
   ApiAuth,
   PageResultDto,
-  PaginationDto,
   Roles,
   RolesEnum,
 } from '@dual-dictionary/common';
@@ -23,6 +22,7 @@ import {
   ChangeRolesDto,
   CreateUserDto,
   UpdateUserDto,
+  UserFilterDto,
   UserResponseDto,
   UserService,
 } from '@dual-dictionary/users';
@@ -46,8 +46,9 @@ export class UsersAdminController {
   @Version('1')
   @ApiOperation({ summary: 'List all users with pagination' })
   async findAll(
-    @Query() pagination: PaginationDto,
+    @Query() pagination: UserFilterDto,
   ): Promise<PageResultDto<UserResponseDto>> {
+    console.log('Pagination:', pagination);
     return this.userService.findAll(pagination);
   }
 

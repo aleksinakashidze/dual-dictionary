@@ -10,6 +10,9 @@ import { I18nCoreModule } from '@dual-dictionary/i18n';
 import { AuthModule } from '@dual-dictionary/auth';
 import { UsersModule } from '@dual-dictionary/users';
 import { HealthModule } from '@dual-dictionary/health';
+import { DictionaryApiModule } from '../modules/dictionary/dictionary-api.module';
+import { StudyListApiModule } from '../modules/study-list/study-list-api.module';
+import { QuizApiModule } from '../modules/quiz/quiz-api.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -22,6 +25,9 @@ import { AppController } from './app.controller';
     UsersModule,
     AuthModule,
     HealthModule,
+    DictionaryApiModule,
+    StudyListApiModule,
+    QuizApiModule,
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60_000, limit: 100 },
       { name: 'strict',  ttl: 60_000, limit: 10  },

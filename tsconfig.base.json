@@ -25,7 +25,10 @@
       "@dual-dictionary/auth": ["modules/auth/src/index.ts"],
       "@dual-dictionary/health": ["core/health/src/index.ts"],
       "@dual-dictionary/users": ["modules/users/src/index.ts"],
-      "@dual-dictionary/i18n": ["core/i18n/src/index.ts"]
+      "@dual-dictionary/i18n": ["core/i18n/src/index.ts"],
+      "@dual-dictionary/dictionary": ["modules/dictionary/src/index.ts"],
+      "@dual-dictionary/study-list": ["modules/study-list/src/index.ts"],
+      "@dual-dictionary/quiz": ["modules/quiz/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

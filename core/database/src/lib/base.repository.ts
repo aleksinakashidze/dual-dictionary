@@ -63,7 +63,7 @@ export abstract class BaseRepository<T extends BaseSchema & Document> {
       .findOneAndUpdate(
         { _id: id, isDeleted: false } as FilterQuery<T>,
         update,
-        { new: true },
+        { returnDocument: 'after' },
       )
       .exec();
 

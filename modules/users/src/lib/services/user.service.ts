@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { HashService, PaginationDto, PageResultDto, RolesEnum } from '@dual-dictionary/common';
+import { HashService, PageResultDto, RolesEnum } from '@dual-dictionary/common';
+import { UserFilterDto } from '../dto/user-filter.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -36,17 +37,23 @@ export class UserService {
   }
 
   async findAll(
-    pagination: PaginationDto,
+    pagination: UserFilterDto,
   ): Promise<PageResultDto<UserResponseDto>> {
+    const filter: Record<string, unknown> = {};
+
+    if (pagination.search) {
+      filter['$or'] = [
+        { username: { $regex: pagination.search, $options: 'i' } },
+        { email: { $regex: pagination.search, $options: 'i' } },
+      ];
+    }
+
+    if (pagination.role) {
+      filter['roles'] = pagination.role;
+    }
+
     const result = await this.userRepo.findPaginated(
-      pagination.search
-        ? {
-            $or: [
-              { username: { $regex: pagination.search, $options: 'i' } },
-              { email: { $regex: pagination.search, $options: 'i' } },
-            ],
-          }
-        : {},
+      filter,
       pagination.page,
       pagination.limit,
     );
