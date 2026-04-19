@@ -65,7 +65,7 @@ async function bootstrap() {
     });
   }
 
-  await app.listen(config.port);
+  await app.listen(config.port, '0.0.0.0');
   logger.log(`API running on http://localhost:${config.port}/api`, 'Bootstrap');
   if (!config.isProduction) {
     logger.log(`Swagger at http://localhost:${config.port}/docs`, 'Bootstrap');
