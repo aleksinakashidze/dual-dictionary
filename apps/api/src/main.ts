@@ -57,13 +57,11 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
 
-  if (!config.isProduction) {
-    setupSwagger(app, {
-      title: 'Dual Dictionary — API',
-      description: 'English ↔ Georgian Dictionary REST API',
-      path: 'docs',
-    });
-  }
+  setupSwagger(app, {
+    title: 'Dual Dictionary — API',
+    description: 'English ↔ Georgian Dictionary REST API',
+    path: 'docs',
+  });
 
   await app.listen(config.port, '0.0.0.0');
   logger.log(`API running on http://localhost:${config.port}/api`, 'Bootstrap');

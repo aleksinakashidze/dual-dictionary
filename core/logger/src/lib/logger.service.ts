@@ -11,7 +11,7 @@ export class AppLogger implements LoggerService {
     const isProd = process.env['NODE_ENV'] === 'production';
 
     this.logger = winston.createLogger({
-      level: isProd ? 'info' : 'debug',
+      level: process.env['LOG_LEVEL'] ?? (isProd ? 'info' : 'debug'),
       format: combine(
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         errors({ stack: true }),
