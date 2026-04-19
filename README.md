@@ -1,5 +1,30 @@
 # DualDictionary
 
+Privacy Policy
+
+This extension collects and processes limited user data to provide its core functionality.
+
+Data Collected:
+- Selected words (for translation purposes)
+- User authentication data (e.g., email or token)
+- Saved words in the learning list
+
+How We Use Data:
+- To provide word translation functionality
+- To allow users to save words to their personal learning list
+- To improve user experience
+
+Data Sharing:
+- Data is sent only to the extension’s backend API for processing
+- No data is sold or shared with third parties
+
+Security:
+- We use secure communication (HTTPS) to protect user data
+
+User Control:
+- Users can choose whether to save words
+- Users can remove their data by contacting support
+
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
 ✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
