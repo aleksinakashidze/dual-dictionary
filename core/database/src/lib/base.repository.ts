@@ -71,6 +71,17 @@ export abstract class BaseRepository<T extends BaseSchema & Document> {
     return doc;
   }
 
+  async updateByIdIgnoreDeleted(
+    id: string | Types.ObjectId,
+    update: UpdateQuery<T>,
+  ): Promise<void> {
+    const oid = typeof id === 'string' ? new Types.ObjectId(id) : id;
+    const result = await this.model
+      .updateOne({ _id: oid } as FilterQuery<T>, { $set: update })
+      .exec();
+    if (result.matchedCount === 0) throw new NotFoundException(`${this.model.modelName} not found`);
+  }
+
   async softDelete(id: string | Types.ObjectId): Promise<void> {
     await this.model
       .findOneAndUpdate(

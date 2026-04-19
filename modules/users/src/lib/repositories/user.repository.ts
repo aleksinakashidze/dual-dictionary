@@ -39,4 +39,64 @@ export class UserRepository extends BaseRepository<UserDocument> {
       .select('+refreshToken')
       .exec();
   }
+
+  // Select reset token fields for password-reset flow
+  async findByEmailWithResetToken(email: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ email: email.toLowerCase(), isDeleted: false })
+      .select('+resetToken +resetTokenExpiry +password')
+      .exec();
+  }
+
+  // Find user by hashed reset token (not expired)
+  async findByHashedResetToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({
+        resetToken: hashedToken,
+        resetTokenExpiry: { $gt: new Date() },
+        isDeleted: false,
+      })
+      .select('+resetToken +resetTokenExpiry')
+      .exec();
+  }
+
+  // Find user by hashed email verification token (not expired)
+  async findByHashedVerificationToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({
+        emailVerificationToken: hashedToken,
+        emailVerificationTokenExpiry: { $gt: new Date() },
+        isDeleted: false,
+      })
+      .select('+emailVerificationToken +emailVerificationTokenExpiry')
+      .exec();
+  }
+
+  // Get verification token fields for a user
+  async findByIdWithVerificationToken(id: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ _id: id, isDeleted: false })
+      .select('+emailVerificationToken +emailVerificationTokenExpiry')
+      .exec();
+  }
+
+  // Find deleted user by email (for account recovery)
+  async findDeletedByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ email: email.toLowerCase(), isDeleted: true })
+      .select('+recoveryToken +recoveryTokenExpiry')
+      .exec();
+  }
+
+  // Find user by hashed recovery token (not expired, can be deleted or active)
+  async findByHashedRecoveryToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({
+        recoveryToken: hashedToken,
+        recoveryTokenExpiry: { $gt: new Date() },
+      })
+      .select('+recoveryToken +recoveryTokenExpiry +isDeleted')
+      .exec();
+  }
 }
+

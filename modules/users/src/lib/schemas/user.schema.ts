@@ -40,6 +40,31 @@ export class User extends BaseSchema {
   // Hashed refresh token — null after logout
   @Prop({ type: String, default: null, select: false })
   refreshToken!: string | null;
+
+  // Hashed one-time password-reset token — null when not in use
+  @Prop({ type: String, default: null, select: false })
+  resetToken!: string | null;
+
+  @Prop({ type: Date, default: null, select: false })
+  resetTokenExpiry!: Date | null;
+
+  // Email verification fields
+  @Prop({ default: false })
+  isEmailVerified!: boolean;
+
+  // Hashed one-time email verification token — null when verified or not in use
+  @Prop({ type: String, default: null, select: false })
+  emailVerificationToken!: string | null;
+
+  @Prop({ type: Date, default: null, select: false })
+  emailVerificationTokenExpiry!: Date | null;
+
+  // Account recovery fields (for deleted accounts)
+  @Prop({ type: String, default: null, select: false })
+  recoveryToken!: string | null;
+
+  @Prop({ type: Date, default: null, select: false })
+  recoveryTokenExpiry!: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

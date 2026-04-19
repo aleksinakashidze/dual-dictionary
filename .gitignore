@@ -43,6 +43,7 @@ Thumbs.db
 .claude/worktrees
 .claude/settings.local.json
 
-# Environment
+# Environment — .env.test is safe to commit; others contain secrets
 .env
+.env.production
 logs/

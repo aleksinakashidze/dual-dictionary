@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Version } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Version } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiAuth, CurrentUser } from '@dual-dictionary/common';
 import { StudyListService } from '../services/study-list.service';
@@ -27,6 +27,17 @@ export class StudyListController {
   ): Promise<StudyListResponseDto> {
     const entry = await this.studyListService.addWord(userId, dto);
     return StudyListResponseDto.from(entry);
+  }
+
+  @Delete(':entryId')
+  @Version('1')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove a word from the study list' })
+  async removeWord(
+    @CurrentUser('sub') userId: string,
+    @Param('entryId') entryId: string,
+  ): Promise<void> {
+    await this.studyListService.removeWord(userId, entryId);
   }
 
   @Get()

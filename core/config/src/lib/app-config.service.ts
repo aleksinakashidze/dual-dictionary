@@ -13,6 +13,10 @@ export class AppConfigService {
     return this.nodeEnv === 'development';
   }
 
+  get isTest(): boolean {
+    return this.nodeEnv === 'test';
+  }
+
   get isProduction(): boolean {
     return this.nodeEnv === 'production';
   }
@@ -86,5 +90,9 @@ export class AppConfigService {
 
   get awsS3Bucket(): string | undefined {
     return this.config.get<string>('AWS_S3_BUCKET');
+  }
+
+  get webAppUrl(): string {
+    return this.config.get<string>('WEB_APP_URL', 'http://localhost:4200');
   }
 }

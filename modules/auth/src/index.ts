@@ -6,3 +6,5 @@ export * from './lib/services/auth.service';
 export * from './lib/dto/register.dto';
 export * from './lib/dto/login.dto';
 export * from './lib/dto/auth-response.dto';
+export * from './lib/dto/forgot-password.dto';
+export * from './lib/dto/reset-password.dto';

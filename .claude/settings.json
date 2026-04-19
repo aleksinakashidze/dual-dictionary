@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/MYPROJ/Projects/Extension/DualDictionary.Extension/extension-root/**)",
+      "Read(//d/Projects/My/dual-dictionary-web/**)"
+    ]
+  }
+}

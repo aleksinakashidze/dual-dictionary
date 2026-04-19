@@ -1,0 +1,13 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "services": {
+    "api": {
+      "dockerfilePath": "Dockerfile.api",
+      "healthcheckPath": "/api"
+    },
+    "admin-api": {
+      "dockerfilePath": "Dockerfile.admin-api",
+      "healthcheckPath": "/api"
+    }
+  }
+}

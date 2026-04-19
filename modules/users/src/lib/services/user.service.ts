@@ -28,12 +28,25 @@ export class UserService {
     if (usernameTaken) throw new ConflictException('Username already taken');
 
     const hashed = await this.hash.hash(dto.password);
-    return this.userRepo.create({
-      ...dto,
-      password: hashed,
-      roles: dto.roles ?? [RolesEnum.User],
-      birthDate: dto.birthDate ? new Date(dto.birthDate) : null,
-    });
+    try {
+      return await this.userRepo.create({
+        ...dto,
+        password: hashed,
+        roles: dto.roles ?? [RolesEnum.User],
+        birthDate: dto.birthDate ? new Date(dto.birthDate) : null,
+      });
+    } catch (err: unknown) {
+      // Handle MongoDB E11000 duplicate key error
+      if (err instanceof Error && err.message.includes('E11000')) {
+        if (err.message.includes('email')) {
+          throw new ConflictException('Email already in use');
+        }
+        if (err.message.includes('username')) {
+          throw new ConflictException('Username already taken');
+        }
+      }
+      throw err;
+    }
   }
 
   async findAll(
@@ -82,6 +95,67 @@ export class UserService {
     return this.userRepo.findByIdWithRefreshToken(id);
   }
 
+  async findByEmailWithResetToken(email: string): Promise<UserDocument | null> {
+    return this.userRepo.findByEmailWithResetToken(email);
+  }
+
+  async findByHashedResetToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userRepo.findByHashedResetToken(hashedToken);
+  }
+
+  async storeResetToken(
+    id: string,
+    hashedToken: string,
+    expiry: Date,
+  ): Promise<void> {
+    await this.userRepo.updateById(id, {
+      resetToken: hashedToken,
+      resetTokenExpiry: expiry,
+    });
+  }
+
+  async clearResetToken(id: string): Promise<void> {
+    await this.userRepo.updateById(id, {
+      resetToken: null,
+      resetTokenExpiry: null,
+    });
+  }
+
+  async storeVerificationToken(
+    id: string,
+    hashedToken: string,
+    expiry: Date,
+  ): Promise<void> {
+    await this.userRepo.updateById(id, {
+      emailVerificationToken: hashedToken,
+      emailVerificationTokenExpiry: expiry,
+    });
+  }
+
+  async clearVerificationToken(id: string): Promise<void> {
+    await this.userRepo.updateById(id, {
+      emailVerificationToken: null,
+      emailVerificationTokenExpiry: null,
+    });
+  }
+
+  async findByHashedVerificationToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userRepo.findByHashedVerificationToken(hashedToken);
+  }
+
+  async markEmailAsVerified(id: string): Promise<void> {
+    await this.userRepo.updateById(id, {
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationTokenExpiry: null,
+    });
+  }
+
+  async updatePassword(id: string, newPassword: string): Promise<void> {
+    const hashed = await this.hash.hash(newPassword);
+    await this.userRepo.updateById(id, { password: hashed });
+  }
+
   async update(id: string, dto: UpdateUserDto): Promise<UserDocument> {
     await this.findById(id);
     return this.userRepo.updateById(id, dto);
@@ -103,5 +177,43 @@ export class UserService {
   async remove(id: string): Promise<void> {
     await this.findById(id);
     await this.userRepo.softDelete(id);
+  }
+
+  async findDeletedByEmail(email: string): Promise<UserDocument | null> {
+    return this.userRepo.findDeletedByEmail(email);
+  }
+
+  async storeRecoveryToken(
+    id: string,
+    hashedToken: string,
+    expiry: Date,
+  ): Promise<void> {
+    await this.userRepo.updateByIdIgnoreDeleted(id, {
+      recoveryToken: hashedToken,
+      recoveryTokenExpiry: expiry,
+    });
+  }
+
+  async findByHashedRecoveryToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userRepo.findByHashedRecoveryToken(hashedToken);
+  }
+
+  async recoverAccount(id: string): Promise<void> {
+    await this.userRepo.updateByIdIgnoreDeleted(id, {
+      isDeleted: false,
+      recoveryToken: null,
+      recoveryTokenExpiry: null,
+    });
+  }
+
+  async clearRecoveryToken(id: string): Promise<void> {
+    await this.userRepo.updateByIdIgnoreDeleted(id, {
+      recoveryToken: null,
+      recoveryTokenExpiry: null,
+    });
+  }
+
+  async permanentlyDeleteUser(id: string): Promise<void> {
+    await this.userRepo.hardDelete(id);
   }
 }

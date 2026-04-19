@@ -26,4 +26,6 @@ export const envSchema = Joi.object({
   AWS_ACCESS_KEY_ID: Joi.string().optional(),
   AWS_SECRET_ACCESS_KEY: Joi.string().optional(),
   AWS_S3_BUCKET: Joi.string().optional(),
+
+  WEB_APP_URL: Joi.string().uri().default('http://localhost:4200'),
 });

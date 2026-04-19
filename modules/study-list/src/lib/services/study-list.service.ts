@@ -72,6 +72,11 @@ console.log('Found word:', word);
     return entry;
   }
 
+  async removeWord(userId: string, entryId: string): Promise<void> {
+    await this.findEntryById(userId, entryId);
+    await this.studyListRepo.softDelete(entryId);
+  }
+
   async recordAttempt(entryId: string, correct: boolean): Promise<void> {
     await this.studyListRepo.recordAttempt(entryId, correct);
   }
