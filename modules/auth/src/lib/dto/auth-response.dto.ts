@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserResponseDto } from '@dual-dictionary/users';
 
 export class TokensDto {
   @ApiProperty()
   accessToken: string;
 
-  @ApiProperty()
-  refreshToken: string;
+  @ApiPropertyOptional({ description: 'Included for native-app clients; web clients use the httpOnly cookie instead.' })
+  refreshToken?: string;
 }
 
 export class AuthResponseDto {

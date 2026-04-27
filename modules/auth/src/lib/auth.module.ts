@@ -6,6 +6,7 @@ import { CommonModule } from '@dual-dictionary/common';
 import { UsersModule } from '@dual-dictionary/users';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
@@ -24,7 +25,7 @@ import { AuthController } from './controllers/auth.controller';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, JwtRefreshStrategy, RefreshTokenGuard, AuthService],
+  providers: [JwtStrategy, JwtRefreshStrategy, GoogleStrategy, RefreshTokenGuard, AuthService],
   exports: [JwtModule, PassportModule, RefreshTokenGuard, AuthService],
 })
 export class AuthModule {}

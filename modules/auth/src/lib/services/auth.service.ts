@@ -6,15 +6,17 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import axios from 'axios';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import * as crypto from 'crypto';
+import { Profile } from 'passport-google-oauth20';
 import { AppConfigService } from '@dual-dictionary/config';
 import { HashService, JwtPayload, MailService } from '@dual-dictionary/common';
 import { UserService, UserResponseDto } from '@dual-dictionary/users';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
-import { AuthResponseDto, TokensDto } from '../dto/auth-response.dto';
+import { AuthResponseDto } from '../dto/auth-response.dto';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
@@ -24,6 +26,11 @@ import { RecoverAccountDto } from '../dto/recover-account.dto';
 const RESET_TOKEN_EXPIRY_MS = 30 * 60 * 1000; // 30 minutes
 const EMAIL_VERIFICATION_TOKEN_EXPIRY_MS = 1 * 60 * 60 * 1000; // 1 hour
 const ACCOUNT_RECOVERY_TOKEN_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+export interface AuthResult {
+  user: UserResponseDto;
+  tokens: { accessToken: string; refreshToken: string };
+}
 
 @Injectable()
 export class AuthService {
@@ -37,7 +44,7 @@ export class AuthService {
     private readonly config: AppConfigService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<AuthResponseDto> {
+  async register(dto: RegisterDto): Promise<AuthResult> {
     // Check if email was used by a deleted account
     const deletedUser = await this.userService.findDeletedByEmail(dto.email);
     if (deletedUser) {
@@ -67,9 +74,11 @@ export class AuthService {
     return { user: UserResponseDto.from(user), tokens };
   }
 
-  async login(dto: LoginDto): Promise<AuthResponseDto> {
+  async login(dto: LoginDto): Promise<AuthResult> {
     const user = await this.userService.findByEmailWithPassword(dto.email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    if (!user.password) throw new UnauthorizedException('This account uses Google sign-in');
 
     const passwordMatch = await this.hash.compare(dto.password, user.password);
     if (!passwordMatch) throw new UnauthorizedException('Invalid credentials');
@@ -85,7 +94,7 @@ export class AuthService {
     return { user: UserResponseDto.from(user), tokens };
   }
 
-  async refreshTokens(userId: string, rawRefreshToken: string): Promise<AuthResponseDto> {
+  async refreshTokens(userId: string, rawRefreshToken: string): Promise<AuthResult> {
     const user = await this.userService.findByIdWithRefreshToken(userId);
     if (!user?.refreshToken) throw new ForbiddenException('Access denied');
 
@@ -300,7 +309,7 @@ export class AuthService {
     userId: string,
     username: string,
     roles: string[],
-  ): Promise<TokensDto> {
+  ): Promise<AuthResult['tokens']> {
     const payload: JwtPayload = { sub: userId, username, roles };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -317,7 +326,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async recoverAccount(dto: RecoverAccountDto): Promise<AuthResponseDto | null> {
+  async recoverAccount(dto: RecoverAccountDto): Promise<AuthResult | null> {
     const hashedToken = crypto.createHash('sha256').update(dto.token).digest('hex');
     const user = await this.userService.findByHashedRecoveryToken(hashedToken);
 
@@ -346,6 +355,59 @@ export class AuthService {
 
       return null;
     }
+  }
+
+  async loginWithGoogle(profile: Profile): Promise<AuthResult> {
+    const googleId = profile.id;
+    const email = profile.emails?.[0]?.value ?? '';
+    const firstName = profile.name?.givenName ?? 'User';
+    const lastName = profile.name?.familyName ?? '';
+
+    const user = await this.userService.findOrCreateByGoogle({ googleId, email, firstName, lastName });
+
+    const tokens = await this.generateTokens(user._id.toString(), user.username, user.roles);
+    await this.userService.updateRefreshToken(user._id.toString(), tokens.refreshToken);
+    return { user: UserResponseDto.from(user), tokens };
+  }
+
+  async loginWithGoogleIdToken(idToken: string): Promise<AuthResult> {
+    interface GoogleTokenInfo {
+      sub: string;
+      email: string;
+      given_name?: string;
+      family_name?: string;
+      aud: string;
+    }
+
+    let info: GoogleTokenInfo;
+    try {
+      const { data } = await axios.get<GoogleTokenInfo>(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`,
+      );
+      info = data;
+    } catch {
+      throw new UnauthorizedException('Invalid Google ID token');
+    }
+
+    if (info.aud !== this.config.googleClientId) {
+      throw new UnauthorizedException('Google token audience mismatch');
+    }
+
+    const user = await this.userService.findOrCreateByGoogle({
+      googleId: info.sub,
+      email: info.email ?? '',
+      firstName: info.given_name ?? 'User',
+      lastName: info.family_name ?? '',
+    });
+
+    const tokens = await this.generateTokens(user._id.toString(), user.username, user.roles);
+    await this.userService.updateRefreshToken(user._id.toString(), tokens.refreshToken);
+    return { user: UserResponseDto.from(user), tokens };
+  }
+
+  async getProfile(userId: string): Promise<UserResponseDto> {
+    const user = await this.userService.findById(userId);
+    return UserResponseDto.from(user);
   }
 
   private async sendAccountRecoveryEmailAsync(

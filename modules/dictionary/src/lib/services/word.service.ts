@@ -15,8 +15,6 @@ export class WordService {
   ) {}
 
   private repo(direction: DirectionEnum) {
-    const a = direction === DirectionEnum.KaEn ? this.kaEnRepo : this.enKaRepo;
-    console.log('Selected repository:', { direction, repo: a.constructor.name });
     return direction === DirectionEnum.KaEn ? this.kaEnRepo : this.enKaRepo;
   }
 
@@ -29,9 +27,7 @@ export class WordService {
   }
 
   async findById(id: string, direction: DirectionEnum): Promise<WordDocument> {
-    console.log('Finding word by ID:', { id, direction });
     const doc = await this.repo(direction).findById(id);
-    console.log('Found word document:', doc);
     if (!doc) throw new NotFoundException('Word not found');
     return doc;
   }

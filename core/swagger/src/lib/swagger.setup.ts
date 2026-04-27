@@ -6,6 +6,8 @@ export interface SwaggerConfig {
   description: string;
   version?: string;
   path?: string;
+  serverUrl?: string;
+  serverDescription?: string;
 }
 
 export function setupSwagger(
@@ -26,8 +28,10 @@ export function setupSwagger(
       },
       'access-token',
     )
-    .addServer('http://localhost:3000', 'Local API')
-    .addServer('http://localhost:3001', 'Local Admin API');
+    .addServer(
+      config.serverUrl ?? 'http://localhost:3000',
+      config.serverDescription ?? 'API',
+    );
 
   const document = SwaggerModule.createDocument(app, builder.build());
 

@@ -1,5 +1,6 @@
-import { Injectable, LoggerService, Scope } from '@nestjs/common';
+import { Injectable, LoggerService, Optional, Scope } from '@nestjs/common';
 import * as winston from 'winston';
+import { AppConfigService } from '@dual-dictionary/config';
 
 const { combine, timestamp, errors, colorize, printf, json } = winston.format;
 
@@ -7,11 +8,11 @@ const { combine, timestamp, errors, colorize, printf, json } = winston.format;
 export class AppLogger implements LoggerService {
   private readonly logger: winston.Logger;
 
-  constructor() {
-    const isProd = process.env['NODE_ENV'] === 'production';
+  constructor(@Optional() private readonly config?: AppConfigService) {
+    const isProd = config?.isProduction ?? process.env['NODE_ENV'] === 'production';
 
     this.logger = winston.createLogger({
-      level: process.env['LOG_LEVEL'] ?? (isProd ? 'info' : 'debug'),
+      level: config?.logLevel ?? process.env['LOG_LEVEL'] ?? (isProd ? 'info' : 'debug'),
       format: combine(
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         errors({ stack: true }),

@@ -16,9 +16,7 @@ export class StudyListService {
     userId: string,
     dto: AddToStudyListDto,
   ): Promise<StudyListEntryDocument> {
-    console.log('Adding word to study list:', { userId, dto });
     const word = await this.wordService.findById(dto.wordId, dto.direction);
-console.log('Found word:', word);
     const existing = await this.studyListRepo.findByUserAndWord(
       userId,
       dto.wordId,

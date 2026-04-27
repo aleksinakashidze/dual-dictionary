@@ -28,4 +28,8 @@ export const envSchema = Joi.object({
   AWS_S3_BUCKET: Joi.string().optional(),
 
   WEB_APP_URL: Joi.string().uri().default('http://localhost:4200'),
+
+  API_URL: Joi.string().uri().default('http://localhost:3000/api'),
+  GOOGLE_CLIENT_ID: Joi.string().optional(),
+  GOOGLE_CLIENT_SECRET: Joi.string().optional(),
 });

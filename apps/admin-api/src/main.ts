@@ -62,6 +62,8 @@ async function bootstrap() {
       title: 'Dual Dictionary — Admin API',
       description: 'Admin panel API for managing users and dictionary words',
       path: 'docs',
+      serverUrl: `${config.apiUrl.replace(/\/api$/, '')}:${config.adminPort}/api`,
+      serverDescription: 'Admin API',
     });
   }
 

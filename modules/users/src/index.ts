@@ -2,6 +2,7 @@ export * from './lib/users.module';
 export * from './lib/schemas/user.schema';
 export * from './lib/repositories/user.repository';
 export * from './lib/services/user.service';
+export * from './lib/dto/base-user.dto';
 export * from './lib/dto/create-user.dto';
 export * from './lib/dto/update-user.dto';
 export * from './lib/dto/user-response.dto';

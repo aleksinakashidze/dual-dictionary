@@ -19,8 +19,11 @@ export class User extends BaseSchema {
   @Prop({ required: true, unique: true, trim: true, lowercase: true })
   email!: string;
 
-  @Prop({ required: true, select: false })
-  password!: string;
+  @Prop({ type: String, required: false, default: null, select: false })
+  password!: string | null;
+
+  @Prop({ type: String, default: null, index: true, sparse: true })
+  googleId!: string | null;
 
   @Prop({ type: String, enum: GenderEnum, required: false, default: null })
   gender!: GenderEnum | null;

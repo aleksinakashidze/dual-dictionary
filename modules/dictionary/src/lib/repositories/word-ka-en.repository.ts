@@ -14,7 +14,6 @@ export class WordKaEnRepository extends BaseRepository<WordDocument> {
 
   async searchByPrefix(prefix: string, limit: number): Promise<WordDocument[]> {
     const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      console.log('Searching for prefix:', escaped);
     return this.model
       .find({
         word: { $regex: `^${escaped}`, $options: 'i' },

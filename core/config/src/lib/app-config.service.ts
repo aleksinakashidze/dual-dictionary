@@ -92,7 +92,24 @@ export class AppConfigService {
     return this.config.get<string>('AWS_S3_BUCKET');
   }
 
+  get logLevel(): string {
+    const isProd = this.isProduction;
+    return this.config.get<string>('LOG_LEVEL', isProd ? 'info' : 'debug');
+  }
+
   get webAppUrl(): string {
     return this.config.get<string>('WEB_APP_URL', 'http://localhost:4200');
+  }
+
+  get apiUrl(): string {
+    return this.config.get<string>('API_URL', 'http://localhost:3000/api');
+  }
+
+  get googleClientId(): string | undefined {
+    return this.config.get<string>('GOOGLE_CLIENT_ID');
+  }
+
+  get googleClientSecret(): string | undefined {
+    return this.config.get<string>('GOOGLE_CLIENT_SECRET');
   }
 }

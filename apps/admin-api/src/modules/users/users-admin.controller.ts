@@ -48,7 +48,6 @@ export class UsersAdminController {
   async findAll(
     @Query() pagination: UserFilterDto,
   ): Promise<PageResultDto<UserResponseDto>> {
-    console.log('Pagination:', pagination);
     return this.userService.findAll(pagination);
   }
 

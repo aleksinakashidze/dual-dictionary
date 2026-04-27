@@ -61,6 +61,8 @@ async function bootstrap() {
     title: 'Dual Dictionary — API',
     description: 'English ↔ Georgian Dictionary REST API',
     path: 'docs',
+    serverUrl: config.apiUrl,
+    serverDescription: 'API',
   });
 
   await app.listen(config.port, '0.0.0.0');

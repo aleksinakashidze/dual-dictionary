@@ -157,12 +157,10 @@ export class UserService {
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<UserDocument> {
-    await this.findById(id);
     return this.userRepo.updateById(id, dto);
   }
 
   async changeRoles(id: string, roles: RolesEnum[]): Promise<UserDocument> {
-    await this.findById(id);
     return this.userRepo.updateById(id, { roles });
   }
 
@@ -215,5 +213,52 @@ export class UserService {
 
   async permanentlyDeleteUser(id: string): Promise<void> {
     await this.userRepo.hardDelete(id);
+  }
+
+  async findOrCreateByGoogle(profile: {
+    googleId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  }): Promise<UserDocument> {
+    const byGoogleId = await this.userRepo.findByGoogleId(profile.googleId);
+    if (byGoogleId) return byGoogleId;
+
+    const byEmail = await this.userRepo.findByEmail(profile.email);
+    if (byEmail) {
+      return this.userRepo.updateById(byEmail._id.toString(), {
+        googleId: profile.googleId,
+        isEmailVerified: true,
+      });
+    }
+
+    const username = await this.generateUniqueUsername(profile.email);
+    return this.userRepo.create({
+      firstName: profile.firstName,
+      lastName: profile.lastName || '-',
+      username,
+      email: profile.email,
+      password: null,
+      googleId: profile.googleId,
+      isEmailVerified: true,
+      roles: [RolesEnum.User],
+      birthDate: null,
+    });
+  }
+
+  private async generateUniqueUsername(email: string): Promise<string> {
+    const base = email
+      .split('@')[0]
+      .replace(/[^a-zA-Z0-9_]/g, '_')
+      .slice(0, 20)
+      .toLowerCase();
+
+    for (let i = 0; i < 5; i++) {
+      const candidate = i === 0 ? base : `${base}_${Math.floor(1000 + Math.random() * 9000)}`;
+      const exists = await this.userRepo.findByUsername(candidate);
+      if (!exists) return candidate;
+    }
+
+    return `user_${Date.now().toString(36).slice(-8)}`;
   }
 }

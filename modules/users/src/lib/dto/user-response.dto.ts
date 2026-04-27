@@ -34,6 +34,9 @@ export class UserResponseDto {
   isActive: boolean;
 
   @ApiProperty()
+  isEmailVerified: boolean;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiPropertyOptional()
@@ -51,6 +54,7 @@ export class UserResponseDto {
       phoneNumber: user.phoneNumber,
       roles: user.roles,
       isActive: user.isActive,
+      isEmailVerified: user.isEmailVerified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

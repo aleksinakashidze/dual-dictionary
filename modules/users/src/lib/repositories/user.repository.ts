@@ -80,6 +80,12 @@ export class UserRepository extends BaseRepository<UserDocument> {
       .exec();
   }
 
+  async findByGoogleId(googleId: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ googleId, isDeleted: false })
+      .exec();
+  }
+
   // Find deleted user by email (for account recovery)
   async findDeletedByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel

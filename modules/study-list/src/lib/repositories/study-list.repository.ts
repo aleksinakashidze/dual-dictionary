@@ -24,10 +24,10 @@ export class StudyListRepository extends BaseRepository<StudyListEntryDocument> 
   ): Promise<StudyListEntryDocument | null> {
     return this.entryModel
       .findOne({
-        // userId: new Types.ObjectId(userId),
+        userId: new Types.ObjectId(userId),
         wordId: new Types.ObjectId(wordId),
         direction,
-        // isDeleted: false,
+        isDeleted: false,
       })
       .exec();
   }

@@ -14,11 +14,10 @@ export class WordEnKaRepository extends BaseRepository<WordDocument> {
 
   async searchByPrefix(prefix: string, limit: number): Promise<WordDocument[]> {
     const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  console.log('Searching for prefix111:', escaped);
     return this.model
       .find({
         word: { $regex: `^${escaped}`, $options: 'i' },
-        // isDeleted: false,
+        isDeleted: false,
       })
       .limit(limit)
       .exec();
