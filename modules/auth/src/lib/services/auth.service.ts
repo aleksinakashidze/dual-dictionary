@@ -114,7 +114,9 @@ export class AuthService {
     res.cookie('refresh_token', token, {
       httpOnly: true,
       secure: this.config.isProduction,
-      sameSite: 'strict',
+      // 'none' required for cross-domain (API on railway.app, web on dualdictionary.com);
+      // 'strict' is fine for local dev where both run on localhost.
+      sameSite: this.config.isProduction ? 'none' : 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }

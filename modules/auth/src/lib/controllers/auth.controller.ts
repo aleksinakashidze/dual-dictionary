@@ -214,16 +214,7 @@ export class AuthController {
   ): Promise<void> {
     const result = await this.authService.loginWithGoogle(req.user);
     this.authService.setRefreshTokenCookie(res, result.tokens.refreshToken);
-    // Deliver the access token via a short-lived non-httpOnly cookie so the
-    // frontend JS can read it once without the token ever appearing in the URL
-    // (URL tokens leak into server logs, browser history, and referrer headers).
-    res.cookie('_auth_tmp', result.tokens.accessToken, {
-      httpOnly: false,
-      secure: this.config.isProduction,
-      sameSite: 'strict',
-      maxAge: 60_000,
-    });
-    res.redirect(`${this.config.webAppUrl}/auth/google/callback`);
+    res.redirect(`${this.config.webAppUrl}/auth/google/callback?token=${result.tokens.accessToken}`);
   }
 
   @Post('account-recovery')
