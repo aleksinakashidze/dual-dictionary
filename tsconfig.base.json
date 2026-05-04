@@ -28,7 +28,8 @@
       "@dual-dictionary/i18n": ["core/i18n/src/index.ts"],
       "@dual-dictionary/dictionary": ["modules/dictionary/src/index.ts"],
       "@dual-dictionary/study-list": ["modules/study-list/src/index.ts"],
-      "@dual-dictionary/quiz": ["modules/quiz/src/index.ts"]
+      "@dual-dictionary/quiz": ["modules/quiz/src/index.ts"],
+      "@dual-dictionary/feedback": ["modules/feedback/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

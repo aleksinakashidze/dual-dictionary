@@ -112,4 +112,8 @@ export class AppConfigService {
   get googleClientSecret(): string | undefined {
     return this.config.get<string>('GOOGLE_CLIENT_SECRET');
   }
+
+  get googleMobileClientId(): string | undefined {
+    return this.config.get<string>('GOOGLE_MOBILE_CLIENT_ID');
+  }
 }

@@ -391,7 +391,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Google ID token');
     }
 
-    if (info.aud !== this.config.googleClientId) {
+    const validAudiences = [this.config.googleClientId, this.config.googleMobileClientId].filter(
+      (id): id is string => typeof id === 'string',
+    );
+    if (!validAudiences.includes(info.aud)) {
       throw new UnauthorizedException('Google token audience mismatch');
     }
 

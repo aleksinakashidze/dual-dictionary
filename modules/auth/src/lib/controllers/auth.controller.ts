@@ -16,6 +16,7 @@ import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { Profile } from 'passport-google-oauth20';
+import { MobileGoogleAuthGuard } from '../guards/mobile-google.guard';
 import {
   ApiAuth,
   CurrentUser,
@@ -190,6 +191,18 @@ export class AuthController {
     // Passport redirects to Google — no body needed
   }
 
+  @Get('google/mobile-init')
+  @Version('1')
+  @Public()
+  @UseGuards(MobileGoogleAuthGuard)
+  @ApiOperation({ summary: 'Initiate Google OAuth login from mobile' })
+  googleMobileInit(): void {
+    if (!this.config.googleClientId) {
+      throw new ServiceUnavailableException('Google OAuth is not configured');
+    }
+    // Guard passes state=mobile and redirects to Google — no body needed
+  }
+
   @Post('google/mobile')
   @Version('1')
   @Public()
@@ -214,7 +227,15 @@ export class AuthController {
   ): Promise<void> {
     const result = await this.authService.loginWithGoogle(req.user);
     this.authService.setRefreshTokenCookie(res, result.tokens.refreshToken);
-    res.redirect(`${this.config.webAppUrl}/auth/google/callback?token=${result.tokens.accessToken}`);
+    if ((req.query['state'] as string) === 'mobile') {
+      const params = new URLSearchParams({
+        accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
+      });
+      res.redirect(`dualdictionary://auth/google/callback?${params.toString()}`);
+    } else {
+      res.redirect(`${this.config.webAppUrl}/auth/google/callback?token=${result.tokens.accessToken}`);
+    }
   }
 
   @Post('account-recovery')

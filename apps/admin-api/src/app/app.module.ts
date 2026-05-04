@@ -9,6 +9,7 @@ import { AuthModule } from '@dual-dictionary/auth';
 import { HealthModule } from '@dual-dictionary/health';
 import { UsersAdminModule } from '../modules/users/users-admin.module';
 import { DictionaryAdminModule } from '../modules/dictionary/dictionary-admin.module';
+import { FeedbackAdminModule } from '../modules/feedback/feedback-admin.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -21,6 +22,7 @@ import { AppController } from './app.controller';
     HealthModule,
     UsersAdminModule,
     DictionaryAdminModule,
+    FeedbackAdminModule,
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60_000, limit: 100 },
       { name: 'strict',  ttl: 60_000, limit: 10  },
