@@ -29,6 +29,7 @@
       "@dual-dictionary/dictionary": ["modules/dictionary/src/index.ts"],
       "@dual-dictionary/study-list": ["modules/study-list/src/index.ts"],
       "@dual-dictionary/quiz": ["modules/quiz/src/index.ts"],
+      "@dual-dictionary/pdf-library": ["modules/pdf-library/src/index.ts"],
       "@dual-dictionary/feedback": ["modules/feedback/src/index.ts"]
     }
   },

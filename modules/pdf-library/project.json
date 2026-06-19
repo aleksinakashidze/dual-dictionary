@@ -1,0 +1,8 @@
+{
+  "name": "pdf-library",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "modules/pdf-library/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}

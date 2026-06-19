@@ -2,8 +2,14 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { Types } from 'mongoose';
 import { WordService } from '@dual-dictionary/dictionary';
 import { StudyListRepository } from '../repositories/study-list.repository';
-import { StudyListEntryDocument } from '../schemas/study-list.schema';
+import { StudyListEntryDocument, StudyListSource } from '../schemas/study-list.schema';
 import { AddToStudyListDto } from '../dto/add-to-study-list.dto';
+
+export interface StudyListSourceInput {
+  source: StudyListSource['source'];
+  bookId?: string;
+  bookTitle?: string;
+}
 
 @Injectable()
 export class StudyListService {
@@ -15,8 +21,11 @@ export class StudyListService {
   async addWord(
     userId: string,
     dto: AddToStudyListDto,
+    sourceInput?: StudyListSourceInput,
   ): Promise<StudyListEntryDocument> {
     const word = await this.wordService.findById(dto.wordId, dto.direction);
+    const addedAt = new Date();
+    const source = this.buildSource(sourceInput, addedAt);
     const existing = await this.studyListRepo.findByUserAndWord(
       userId,
       dto.wordId,
@@ -36,7 +45,8 @@ export class StudyListService {
       // force: true — push a new date without creating a duplicate document
       return this.studyListRepo.pushAddedDate(
         existing._id.toString(),
-        new Date(),
+        addedAt,
+        source,
       );
     }
 
@@ -46,7 +56,8 @@ export class StudyListService {
       word: word.word,
       translation: word.translation,
       direction: dto.direction,
-      addedDates: [new Date()],
+      addedDates: [addedAt],
+      sources: [source],
       incorrectCount: 0,
       totalAttempts: 0,
     });
@@ -77,5 +88,17 @@ export class StudyListService {
 
   async recordAttempt(entryId: string, correct: boolean): Promise<void> {
     await this.studyListRepo.recordAttempt(entryId, correct);
+  }
+
+  private buildSource(
+    input: StudyListSourceInput | undefined,
+    addedAt: Date,
+  ): StudyListSource {
+    return {
+      source: input?.source ?? 'manual',
+      bookId: input?.bookId ? new Types.ObjectId(input.bookId) : null,
+      bookTitle: input?.bookTitle ?? null,
+      addedAt,
+    };
   }
 }

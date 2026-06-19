@@ -92,6 +92,18 @@ export class AppConfigService {
     return this.config.get<string>('AWS_S3_BUCKET');
   }
 
+  get pdfStorageDriver(): 'local' | 's3' {
+    return this.config.get<'local' | 's3'>('PDF_STORAGE_DRIVER', 'local');
+  }
+
+  get pdfStoragePath(): string {
+    return this.config.get<string>('PDF_STORAGE_PATH', 'storage/pdf-books');
+  }
+
+  get pdfMaxFileSizeMb(): number {
+    return this.config.get<number>('PDF_MAX_FILE_SIZE_MB', 30);
+  }
+
   get logLevel(): string {
     const isProd = this.isProduction;
     return this.config.get<string>('LOG_LEVEL', isProd ? 'info' : 'debug');

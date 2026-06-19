@@ -27,6 +27,10 @@ export const envSchema = Joi.object({
   AWS_SECRET_ACCESS_KEY: Joi.string().optional(),
   AWS_S3_BUCKET: Joi.string().optional(),
 
+  PDF_STORAGE_DRIVER: Joi.string().valid('local', 's3').default('local'),
+  PDF_STORAGE_PATH: Joi.string().default('storage/pdf-books'),
+  PDF_MAX_FILE_SIZE_MB: Joi.number().min(1).max(200).default(30),
+
   WEB_APP_URL: Joi.string().uri().default('http://localhost:4200'),
 
   API_URL: Joi.string().uri().default('http://localhost:3000/api'),

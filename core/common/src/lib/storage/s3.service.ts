@@ -20,6 +20,12 @@ export interface UploadOptions {
   fileName?: string;
 }
 
+export interface S3ObjectResult {
+  body: NodeJS.ReadableStream;
+  contentLength?: number;
+  contentType?: string;
+}
+
 @Injectable()
 export class S3Service {
   private readonly logger = new Logger(S3Service.name);
@@ -69,6 +75,23 @@ export class S3Service {
       new GetObjectCommand({ Bucket: this.config.awsS3Bucket!, Key: key }),
       { expiresIn },
     );
+  }
+
+  async getObject(key: string): Promise<S3ObjectResult> {
+    this.assertConfigured();
+    const result = await this.client!.send(
+      new GetObjectCommand({ Bucket: this.config.awsS3Bucket!, Key: key }),
+    );
+
+    if (!result.Body) {
+      throw new Error('S3 object has no body');
+    }
+
+    return {
+      body: result.Body as NodeJS.ReadableStream,
+      contentLength: result.ContentLength,
+      contentType: result.ContentType,
+    };
   }
 
   async delete(key: string): Promise<void> {

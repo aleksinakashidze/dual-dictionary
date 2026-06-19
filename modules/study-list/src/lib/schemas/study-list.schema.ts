@@ -5,6 +5,13 @@ import { DirectionEnum } from '@dual-dictionary/dictionary';
 
 export type StudyListEntryDocument = StudyListEntry & Document;
 
+export interface StudyListSource {
+  source: 'manual' | 'pdf-book';
+  bookId?: Types.ObjectId | null;
+  bookTitle?: string | null;
+  addedAt: Date;
+}
+
 @Schema({ timestamps: true })
 export class StudyListEntry extends BaseSchema {
   @Prop({ required: true, type: Types.ObjectId, ref: 'User', index: true })
@@ -27,6 +34,17 @@ export class StudyListEntry extends BaseSchema {
   @Prop({ type: [Date], default: [] })
   addedDates!: Date[];
 
+  @Prop({
+    type: [{
+      source: { type: String, enum: ['manual', 'pdf-book'], default: 'manual' },
+      bookId: { type: Types.ObjectId, ref: 'PdfBook', default: null },
+      bookTitle: { type: String, trim: true, default: null },
+      addedAt: { type: Date, default: Date.now },
+    }],
+    default: [],
+  })
+  sources!: StudyListSource[];
+
   @Prop({ default: 0 })
   incorrectCount!: number;
 
@@ -44,3 +62,4 @@ StudyListEntrySchema.index(
 
 // Fast date-range queries for quiz/study sessions
 StudyListEntrySchema.index({ userId: 1, addedDates: 1 });
+StudyListEntrySchema.index({ userId: 1, 'sources.bookId': 1 });

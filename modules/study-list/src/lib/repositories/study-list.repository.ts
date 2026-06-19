@@ -6,6 +6,7 @@ import { DirectionEnum } from '@dual-dictionary/dictionary';
 import {
   StudyListEntry,
   StudyListEntryDocument,
+  StudyListSource,
 } from '../schemas/study-list.schema';
 
 @Injectable()
@@ -53,11 +54,12 @@ export class StudyListRepository extends BaseRepository<StudyListEntryDocument> 
   async pushAddedDate(
     id: string,
     date: Date,
+    source: StudyListSource,
   ): Promise<StudyListEntryDocument> {
     const doc = await this.entryModel
       .findByIdAndUpdate(
         id,
-        { $push: { addedDates: date } },
+        { $push: { addedDates: date, sources: source } },
         { returnDocument: 'after' },
       )
       .exec();

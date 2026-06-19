@@ -13,6 +13,7 @@ import { HealthModule } from '@dual-dictionary/health';
 import { DictionaryApiModule } from '../modules/dictionary/dictionary-api.module';
 import { StudyListApiModule } from '../modules/study-list/study-list-api.module';
 import { QuizApiModule } from '../modules/quiz/quiz-api.module';
+import { PdfLibraryApiModule } from '../modules/pdf-library/pdf-library-api.module';
 import { FeedbackApiModule } from '../modules/feedback/feedback-api.module';
 import { AppController } from './app.controller';
 
@@ -29,6 +30,7 @@ import { AppController } from './app.controller';
     DictionaryApiModule,
     StudyListApiModule,
     QuizApiModule,
+    PdfLibraryApiModule,
     FeedbackApiModule,
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60_000, limit: 100 },

@@ -1,6 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DirectionEnum } from '@dual-dictionary/dictionary';
-import { StudyListEntryDocument } from '../schemas/study-list.schema';
+import { StudyListEntryDocument, StudyListSource } from '../schemas/study-list.schema';
+
+export class StudyListSourceResponseDto {
+  @ApiProperty()
+  source!: StudyListSource['source'];
+
+  @ApiProperty({ nullable: true })
+  bookId!: string | null;
+
+  @ApiProperty({ nullable: true })
+  bookTitle!: string | null;
+
+  @ApiProperty()
+  addedAt!: Date;
+}
 
 export class StudyListResponseDto {
   @ApiProperty()
@@ -21,6 +35,9 @@ export class StudyListResponseDto {
   @ApiProperty({ type: [Date] })
   addedDates!: Date[];
 
+  @ApiProperty({ type: [StudyListSourceResponseDto] })
+  sources!: StudyListSourceResponseDto[];
+
   @ApiProperty()
   incorrectCount!: number;
 
@@ -35,6 +52,12 @@ export class StudyListResponseDto {
       translation: doc.translation,
       direction: doc.direction,
       addedDates: doc.addedDates,
+      sources: (doc.sources ?? []).map((source) => ({
+        source: source.source,
+        bookId: source.bookId?.toString() ?? null,
+        bookTitle: source.bookTitle ?? null,
+        addedAt: source.addedAt,
+      })),
       incorrectCount: doc.incorrectCount,
       totalAttempts: doc.totalAttempts,
     };
