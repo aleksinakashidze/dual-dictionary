@@ -111,7 +111,7 @@ All routes are prefixed `/api/v1`. Global JWT guard is on; endpoints are public 
 - `study-list/*` — manage saved words.
 - `quiz/*` — practice over the user's study list.
 - `feedback/*` — submit feedback.
-- `health` — Terminus health check (used by Railway).
+- `health` — Terminus health check + DB ping (used by Railway). `health/ping` is a lightweight liveness endpoint (no DB, fixed-length body, excluded from gzip/compression) for external uptime pingers like cron-job.org.
 
 **Admin API (`apps/admin-api`)** — internal endpoints for `dictionary`, `users`, `feedback` management.
 

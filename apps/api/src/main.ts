@@ -28,7 +28,19 @@ async function bootstrap() {
   // Security
   app.use(helmet());
   app.use(cookieParser());
-  app.use(compression());
+  app.use(
+    compression({
+      // Health/ping endpoints must return a fixed Content-Length (no chunked
+      // gzip) so lightweight uptime pingers (e.g. cron-job.org) can detect the
+      // end of the response and don't fail with "output too large".
+      filter: (req, res) => {
+        if (req.path === '/api/health' || req.path === '/api/ping') {
+          return false;
+        }
+        return compression.filter(req, res);
+      },
+    }),
+  );
 
   app.setGlobalPrefix('api');
 

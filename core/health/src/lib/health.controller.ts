@@ -23,4 +23,12 @@ export class HealthController {
       () => this.mongoose.pingCheck('mongodb'),
     ]);
   }
+
+  // Lightweight liveness ping for uptime pingers (e.g. cron-job.org).
+  // Does not touch the database and returns a tiny, fixed-length body.
+  @Get('ping')
+  @Public()
+  ping() {
+    return { status: 'ok' };
+  }
 }
