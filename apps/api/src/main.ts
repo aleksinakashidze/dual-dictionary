@@ -1,5 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { VersioningType } from '@nestjs/common';
+import type { Request, Response } from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -41,6 +42,18 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Raw, dependency-free liveness route for external uptime pingers.
+  // Registered directly on Express so it bypasses the global ResponseInterceptor
+  // and always returns a fixed Content-Length (not a chunked response). Some
+  // pingers (e.g. cron-job.org) fail chunked responses with "output too large".
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.get('/api/health/ping', (_req: Request, res: Response) => {
+    res
+      .type('text/plain')
+      .set('Cache-Control', 'no-store')
+      .send('ok');
+  });
 
   app.setGlobalPrefix('api');
 
