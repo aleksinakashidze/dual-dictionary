@@ -109,7 +109,7 @@ All routes are prefixed `/api/v1`. Global JWT guard is on; endpoints are public 
 - `auth/*` — `register`, `login`, `refresh`, `logout`, `forgot-password`, `validate-reset-token`, `reset-password`, `verify-email`, `resend-verification-email`, `me`, Google OAuth (`google`, `google/callback`, `google/mobile-init`, `google/mobile`), `account-recovery`.
 - `dictionary/search` — autocomplete word search, `direction=en-ka|ka-en`, min 3 chars, throttled 30/min.
 - `study-list/*` — manage saved words.
-- `quiz/*` — practice over the user's study list.
+- `quiz/*` — practice over the user's study list. Answer checking (`modules/quiz/src/lib/utils/answer-matcher.ts`) accepts any single alternative of a packed translation (split on `◊ ; , /`), ignores leading POS tags (`n`, `a`, `adv`…), parentheticals and leading hyphens, case/whitespace-insensitive.
 - `feedback/*` — submit feedback.
 - `health` — Terminus health check + DB ping (used by Railway). `health/ping` is a lightweight liveness endpoint (no DB, fixed-length body, excluded from gzip/compression) for external uptime pingers like cron-job.org.
 

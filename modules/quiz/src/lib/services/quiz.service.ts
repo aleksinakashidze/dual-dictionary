@@ -3,6 +3,7 @@ import { StudyListService } from '@dual-dictionary/study-list';
 import { QuizWordDto } from '../dto/quiz-word.dto';
 import { CheckAnswerDto } from '../dto/check-answer.dto';
 import { CheckAnswerResponseDto } from '../dto/check-answer-response.dto';
+import { isAnswerCorrect } from '../utils/answer-matcher';
 
 @Injectable()
 export class QuizService {
@@ -32,9 +33,9 @@ export class QuizService {
   ): Promise<CheckAnswerResponseDto> {
     const entry = await this.studyListService.findEntryById(userId, dto.entryId);
 
-    const correct =
-      entry.translation.trim().toLowerCase() ===
-      dto.answer.trim().toLowerCase();
+    // Translations pack several alternatives ("ხილვადი, ცხადი ◊ ცხადი");
+    // any single alternative counts as a correct answer.
+    const correct = isAnswerCorrect(entry.translation, dto.answer);
 
     await this.studyListService.recordAttempt(dto.entryId, correct);
 
